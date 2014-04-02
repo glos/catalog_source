@@ -7,8 +7,12 @@ import BaseXClient
 from git import Repo
 from git.exc import GitCommandError
 
+from optparse import OptionParser
+
 class GitConsistentUpdateException(Exception):
     pass
+
+#  import ipdb; ipdb.set_trace()
 
 def readXml(filename):
     doc = xml.dom.minidom.parse(filename)
@@ -49,7 +53,15 @@ class ControlledUpdate(object):
         self._repo.index.commit(commit_message)
         
         for remote in self._repo.remotes:
+            remote.pull()
+        
+        for remote in self._repo.remotes:
             remote.push()
+            
+        # clean up any files that were removed
+        cmdgit = self._repo.git
+        cmdgit.clean('-f','-d')
+    
     
     def add_message(self,*args):
         self._messages.append(args)
@@ -161,13 +173,12 @@ def main(base_server, base_user, base_pass, base_port=1984, db_name='', git_meta
     
     # keep historical option to specify a single directory to update
     directory = None
-    other_files = set(cmdgit.ls_files('--others','--full-name', directory).split('\n'))
-    cached_files = set(cmdgit.ls_files('--cached','--full-name', directory).split('\n'))
-    modified_files = set(cmdgit.ls_files('--modified','--full-name', directory).split('\n'))
+    other_files = set(cmdgit.ls_files('--others','--full-name', directory).split())
+    cached_files = set(cmdgit.ls_files('--cached','--full-name', directory).split())
+    modified_files = set(cmdgit.ls_files('--modified','--full-name', directory).split())
     
     unmodified_files = cached_files.difference(modified_files)
     ####
-    
     
     with ControlledUpdate(repo, session) as cu:
     
@@ -189,18 +200,30 @@ def main(base_server, base_user, base_pass, base_port=1984, db_name='', git_meta
         session.close()
 
 
+
 if __name__ == "__main__":
 
-
+    # Keep these here so it is easy to copy for interactive execution
     base_server = os.environ.get("BASEX_SERVER", 'localhost')
     base_port = os.environ.get("BASEX_PORT", 1984)
     base_user = os.environ.get("BASEX_USER",'admin')
     base_pass = os.environ.get("BASEX_PASS",'admin')
    
-    git_metadata_dir = '/Users/dstuebe/code/glos/metadata'
-    db_name = "foobar"
+    git_metadata_dir = '../../metadata'
+    db_name = "glos"
     new_db = False
+
+
+    parser = OptionParser()
+    parser.add_option("-s", "--server", dest="base_server", help="The hostname or IP of the basex server", type="string", default=base_server)
+    parser.add_option("-p", "--port", dest="base_port", help="The port number for the basex server", type="string", default=base_port)
+    parser.add_option("-u", "--user", dest="base_user", help="The user naem for the basex server", type="string", default=base_user)
+    parser.add_option("-w", "--password", dest="base_pass", help="The password for the basex server", type="string", default=base_pass)
+    parser.add_option("-d", "--dir", dest="git_metadata_dir", help="The git directory where the metadata lives", type="string", default=git_metadata_dir)
+    parser.add_option("-n", "--dbname", dest="db_name", help="The name of the basex database", type="string", default=db_name)
+    parser.add_option("-c", "--create", dest="new_db", help="The name of the basex database", action='store_true')
     
-    
-    main(base_server, base_user, base_pass, base_port, db_name, git_metadata_dir, new_db)
+    (options, args) = parser.parse_args()
+
+    main(**options.__dict__)
 

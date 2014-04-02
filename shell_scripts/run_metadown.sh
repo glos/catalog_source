@@ -1,13 +1,8 @@
 source ~/.bash_profile
 
-cd ~/isos_for_metadown/glos_catalog
-git pull origin master
-
 cd metadown
-python download.py ~/isos_for_metadown/glos_catalog/ISOs
+python download.py ../../metadata
 
-#cd ~/isos_for_metadown/glos_catalog
-#git checkout master && git add . && git commit -m "Metadown generated content" && git pull && git push origin master
 
 # Now update BaseX
 #cd ~/glos_catalog/basex; bash populate_git.sh /home/harvester/glos_catalog/ISOs Models
