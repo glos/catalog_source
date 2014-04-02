@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<catalog name="GLOS THREDDS Server"
+        xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0"
+        xmlns:xlink="http://www.w3.org/1999/xlink">
+
+  <dataset name="Satellite Datasets">
+    <catalogRef xlink:title="MTRI - Lake Surface Temperature (MODIS)" xlink:href="mtri/aoc.xml" name=""/>
+    <catalogRef xlink:title="MTRI - Lake Surface Chlorophyll (MODIS)" xlink:href="mtri/chl.xml" name=""/>
+    <catalogRef xlink:title="MTRI - Natural Color Imagery (MODIS)" xlink:href="mtri/natcolor.xml" name=""/>
+    <catalogRef xlink:title="MTRI - Color Dissolved Organic Matter (MODIS)" xlink:href="mtri/cdom.xml" name=""/>
+    <catalogRef xlink:title="MTRI - Dissolved Organic Carbon (MODIS)" xlink:href="mtri/doc.xml" name=""/>
+    <catalogRef xlink:title="MTRI - Suspended Minerals (MODIS)" xlink:href="mtri/sm.xml" name=""/>
+  </dataset>
+  
+  <dataset name="Modeled Datasets">
+    <catalogRef xlink:title="GLCFS - Great Lakes Coastal Forecasting System (POM)" xlink:href="glcfs/glcfs.xml" name=""/>
+    <catalogRef xlink:title="SLRFVM - Upper St. Lawrence River (FVCOM)" xlink:href="slrfvm/slrfvm.xml" name=""/>
+    <catalogRef xlink:title="HECWFS - Huron to Erie Connecting Waterways Forecasting System (FVCOM)" xlink:href="hecwfs/hecwfs.xml" name=""/>
+  </dataset>
+
+
+
+  <dataset name="Hydrologic Datasets">
+    <catalogRef xlink:title="GLERL - NBS" xlink:href="glerl/NBS.xml" name=""/>
+    <catalogRef xlink:title="GLERL - Atmospherics" xlink:href="glerl/ATMO.xml" name=""/>
+    <catalogRef xlink:title="GLERL - Precipitation" xlink:href="glerl/PRECIP.xml" name=""/>
+    <catalogRef xlink:title="GLERL - Air Temperature" xlink:href="glerl/AIRTEMPS.xml" name=""/>
+  </dataset>
+  <dataset name="Cumulative Impact Assessment -- Water Use Datasets">
+    <catalogRef xlink:title="GLC - Water Use Historical 2006 to 2011" xlink:href="glc/wateruse.xml" name=""/>
+  </dataset>
+  <dataset name="RANGER3">
+    <catalogRef xlink:title="Ranger3" xlink:href="ranger3.xml" name=""/>
+  </dataset>
+
+
+  <dataset name="Water Levels">
+    <catalogRef xlink:title="Water Levels" xlink:href="water_levels.xml" name=""/>
+  </dataset>
+
+  <dataset name="Other">
+    <catalogRef xlink:title="Bathymetry - NOAA Coastal Relief (3 arc sec)" xlink:href="bathy.xml" name=""/>
+    <catalogRef xlink:title="CF - Discrete Sampling Geometry Examples" xlink:href="cf_feature_types.xml" name=""/>
+  </dataset>
+
+</catalog>
