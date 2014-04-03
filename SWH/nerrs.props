@@ -1,0 +1,48 @@
+# The URL where the metadata database can be found
+database_url = jdbc:h2:~/db-sensor-metadata
+
+# The username used to access the metadata database
+database_username = sensoruser
+
+# The password associated to the database_username
+database_password = sensor
+
+# The URL to the SOS being used
+sos_url = http://64.9.200.113:8080/52n-sos-ioos/sos
+
+# The publisher's country
+publisher_country = USA
+
+# The publisher's email address
+publisher_email = dmac@glos.us
+
+# The web address of the publisher
+publisher_web_address = http://glos.us
+
+# The name of the publishing organization
+publisher_name = GLOS
+
+# The northernmost latitude of the bounding box
+north_lat = 50.0
+
+# The southernmost latitude of the bounding box
+south_lat = 40.0
+
+# The westernmost longitude of the bounding box
+west_lon = -93.0
+
+# The easternmost longitude of the bounding box
+east_lon = -75.0
+
+# semi-colon seperated value list of sources that are to be updated (optional: this will default to 'all' if it is not the properties file)
+# sources = all - this will operate on all known sources
+# sources = nerrs;storet;glos - this will operate on the nerrs, storet and glos sources
+# Accepted values: all, glos, hads, ndbc, nerrs, noaa_nos_coops, noaaweather, raws, snotel, storet, usgswater
+# Uncomment line below to use this option
+sources = nerrs
+
+# location of ISO 19115 template xml
+iso_template = iso/iso_template.xml
+
+# root location to write ISO 19115 xml files (will be subdivided by source)
+iso_write_location = iso
