@@ -30,25 +30,32 @@ class ControlledUpdate(object):
         self._session = session
         self._messages = []
 
+        self.inserted = 0
+        self.removed = 0
+        self.replaced = 0
+
     @property
     def repo_dir(self):
-        return os.path.split(self._repo.git_dir)[0]
+        return os.path.split(self._repo.git_dir)[0]    
     
     def __enter__(self):
         return self
     
     def __exit__(self, type, value, traceback):
-        commit_message = 'Metadown generated content add'
+        commit_message = 'Metadown generated content: added - %s, replaced - %s, removed - %s' % (self.inserted, self.replaced, self.removed)
+        
+        if len(self._messages) > 0:
+            for message in self._messages:
+                print "file '%s' Raised Exception '%s' during operation %s" %(message[0],message[2],message[4])
+              
+            commit_message +=  '\nDuring update, %s errors occurred !' % len(self._messages)  
         
         if value is not None:
             print value, type, type(traceback)
             commit_message += '\nbut error type %s stopped the update!' % type
     
-        if len(self._messages) > 0:
-            for message in self._messages:
-                print "file '%s' Raised Exception '%s' during operation %s" %(message[0],message[2],message[4])
-                
-            commit_message +=  'During update, %s errors occurred !' % len(self._messages)
+        
+            
         
         self._repo.index.commit(commit_message)
         
@@ -95,6 +102,8 @@ class ControlledInsert(ContextBase):
     def __exit__(self, type, value, traceback):
         if type is not None:
             self._cu.add_message(self._file, type, value, traceback,self.__class__.__name__)
+        else:
+            self._cu.inserted += 1
         # Fail if there is a git error
         return not isinstance(value, GitCommandError)
         
@@ -114,6 +123,8 @@ class ControlledReplace(ContextBase):
     def __exit__(self, type, value, traceback):
         if type is not None:
             self._cu.add_message(self._file, type, value, traceback,self.__class__.__name__)
+        else:
+            self._cu.replaced += 1
         # Fail if there is a git error
         return not isinstance(value, GitCommandError)
         
@@ -133,6 +144,8 @@ class ControlledRemove(ContextBase):
     def __exit__(self, type, value, traceback):
         if type is not None:
             self._cu.add_message(self._file, type, value, traceback,self.__class__.__name__)
+        else:
+            self._cu.removed += 1
         # Fail if there is a git error
         return not isinstance(value, GitCommandError)
     
