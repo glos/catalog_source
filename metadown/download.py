@@ -98,6 +98,11 @@ def main(base_download_path):
     selects = [".*"]
     download_path = os.path.join(base_download_path, "WaterLevels")
     run_downloader(selects, "http://tds.glos.us/thredds/water_levels.html", download_path)
+    
+    #UMD Glider
+    selects = [".*"]
+    download_path = os.path.join(base_download_path, "UMDGlider")
+    run_downloader(selects, "http://tds.glos.us/thredds/glos_glider.html", download_path)
 
     # CIA
     selects = [".*"]
