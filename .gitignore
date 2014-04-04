@@ -1,6 +1,7 @@
 *.pyc
 *.jar
 SWH/iso
+SWH/*.props
 
 pyiso/pyiso/iso_tmp/*
 *.log
