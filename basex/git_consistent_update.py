@@ -1,7 +1,9 @@
 import os
 import sys
 import xml.dom.minidom
-
+from metadown.utils.etree import etree
+import datetime
+import time
 import BaseXClient
 
 from git import Repo
@@ -155,7 +157,7 @@ class ControlledRemove(ContextBase):
         self._index.remove([file,])
     
     
-def main(base_server, base_user, base_pass, base_port=1984, db_name='', git_metadata_dir='', new_db=False):
+def main(base_server, base_user, base_pass, base_port=1984, db_name='', git_metadata_dir='', new_db=False, t2l=24):
     """
     repository is a path to the glos_catalog repository
     directory is a path relative to root of the repository
@@ -204,14 +206,51 @@ def main(base_server, base_user, base_pass, base_port=1984, db_name='', git_meta
                 cr.replace_file(fname)
     
         for fname in unmodified_files:
-            with ControlledRemove(cu) as cr:
-                cr.remove_file(fname)
+        
+            if expired(os.path.join(cu.repo_dir, fname)) > t2l:        
+                with ControlledRemove(cu) as cr:
+                    cr.remove_file(fname)
     
     if session:
         session.execute("OPTIMIZE ALL")
         print session.info()
         session.close()
 
+
+def expired(fname):
+    namespaces = {
+    "gmx":"http://www.isotc211.org/2005/gmx",
+    "gsr":"http://www.isotc211.org/2005/gsr",
+    "gss":"http://www.isotc211.org/2005/gss",
+    "gts":"http://www.isotc211.org/2005/gts",
+    "xs":"http://www.w3.org/2001/XMLSchema",
+    "gml":"http://www.opengis.net/gml/3.2",
+    "xlink":"http://www.w3.org/1999/xlink",
+    "xsi":"http://www.w3.org/2001/XMLSchema-instance",
+    "gco":"http://www.isotc211.org/2005/gco",
+    "gmd":"http://www.isotc211.org/2005/gmd",
+    "gmi":"http://www.isotc211.org/2005/gmi",
+    "srv":"http://www.isotc211.org/2005/srv",
+    }
+
+                
+    # Always modify date stamp!
+    root = etree.parse(fname)
+    
+    x_res = root.xpath(
+    'gmd:dateStamp/gco:DateTime', 
+    namespaces=namespaces
+    )
+    
+    dt = x_res[0].text
+    
+    print dt
+    d  = datetime.datetime.strptime( dt[:-7], "%Y-%m-%dT%H:%M:%S" )
+
+    delta = time.mktime(datetime.datetime.now().timetuple()) - time.mktime(d.timetuple())
+
+    
+    return delta / (3600.)
 
 
 if __name__ == "__main__":
@@ -235,6 +274,7 @@ if __name__ == "__main__":
     parser.add_option("-d", "--dir", dest="git_metadata_dir", help="The git directory where the metadata lives", type="string", default=git_metadata_dir)
     parser.add_option("-n", "--dbname", dest="db_name", help="The name of the basex database", type="string", default=db_name)
     parser.add_option("-c", "--create", dest="new_db", help="The name of the basex database", action='store_true')
+    parser.add_option("-t", "--timetolive", dest="t2l", help="The time to live in hours after a dataset is removed", type="int", default=24)
     
     (options, args) = parser.parse_args()
 
