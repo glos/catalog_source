@@ -35,6 +35,7 @@ class ControlledUpdate(object):
         self.inserted = 0
         self.removed = 0
         self.replaced = 0
+        self.purgatory = 0
 
     @property
     def repo_dir(self):
@@ -44,7 +45,7 @@ class ControlledUpdate(object):
         return self
     
     def __exit__(self, type, value, traceback):
-        commit_message = 'Metadown generated content: added - %s, replaced - %s, removed - %s' % (self.inserted, self.replaced, self.removed)
+        commit_message = 'Metadown generated content: added - %s, replaced - %s, purgatory - %s, removed - %s' % (self.inserted, self.replaced, self.purgatory, self.removed)
         
         if len(self._messages) > 0:
             for message in self._messages:
@@ -210,6 +211,9 @@ def main(base_server, base_user, base_pass, base_port=1984, db_name='', git_meta
             if expired(os.path.join(cu.repo_dir, fname)) > t2l:        
                 with ControlledRemove(cu) as cr:
                     cr.remove_file(fname)
+            else:
+                cu.purgatory += 1
+            
     
     if session:
         session.execute("OPTIMIZE ALL")
@@ -243,8 +247,6 @@ def expired(fname):
     )
     
     dt = x_res[0].text
-    
-    print dt
     d  = datetime.datetime.strptime( dt[:-7], "%Y-%m-%dT%H:%M:%S" )
 
     delta = time.mktime(datetime.datetime.now().timetuple()) - time.mktime(d.timetuple())
