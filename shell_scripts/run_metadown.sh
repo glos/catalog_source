@@ -8,5 +8,5 @@ python download.py $METADOWN_DATA
 cd ..
 
 cd basex
-python git_consistent_update.py -d $METADOWN_DATA -n test_glos
+python git_consistent_update.py -d $METADOWN_DATA -n $GLOS_DB
 cd ..
