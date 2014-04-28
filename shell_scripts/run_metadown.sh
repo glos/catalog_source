@@ -1,5 +1,5 @@
 source ~/.bash_profile
-workon harvest_test
+workon harvest_r2
 
 cd $CATALOG_SOURCE
 
