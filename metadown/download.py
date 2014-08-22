@@ -110,9 +110,9 @@ def main(base_download_path):
     download_path = os.path.join(base_download_path, "GLC")
     XmlDownloader.run(isos, download_path)
 
-    isos = GeoNetworkCollector("http://slrfvm.glos.us/geonetwork").run()
-    download_path = os.path.join(base_download_path, "GeoNetwork")
-    XmlDownloader.run(isos, download_path, namer=GeoNetworkCollector.uuid_namer, modifier=GeoNetworkCollector.modifier)   
+    #isos = GeoNetworkCollector("http://slrfvm.glos.us/geonetwork").run()
+    #download_path = os.path.join(base_download_path, "GeoNetwork")
+    #XmlDownloader.run(isos, download_path, namer=GeoNetworkCollector.uuid_namer, modifier=GeoNetworkCollector.modifier)   
 
 main(sys.argv[1])
 
