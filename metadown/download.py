@@ -104,6 +104,11 @@ def main(base_download_path):
     download_path = os.path.join(base_download_path, "UMDGlider")
     run_downloader(selects, "http://tds.glos.us/thredds/glos_glider.html", download_path)
 
+    # GLOP
+    selects = [".*"]
+    download_path = os.path.join(base_download_path, "GLOP")
+    run_downloader(selects, "http://tds.glos.us/thredds/glop/glop.html", download_path)
+
     # CIA
     selects = [".*"]
     isos = ThreddsCollector("http://tds.glos.us/thredds/glc/wateruse.html", selects=selects).run()
