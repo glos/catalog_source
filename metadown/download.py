@@ -1,7 +1,7 @@
 from metadown.collectors.thredds import ThreddsCollector
 from metadown.collectors.geonetwork import GeoNetworkCollector
 from metadown.downloader import XmlDownloader
-
+import argparse
 import os
 import sys
 
@@ -120,6 +120,14 @@ def geonetwork_collector(base_download_path):
     download_path = os.path.join(base_download_path, "GeoNetwork")
     XmlDownloader.run(isos, download_path, namer=GeoNetworkCollector.uuid_namer, modifier=GeoNetworkCollector.modifier)   
 
-main(sys.argv[1])
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description='Metadata Download')
+    parser.add_argument('-g', '--geonetwork', help="Run only the geonetwork collector", action="store_true")
+    parser.add_argument("base_download_path", help="Root directory for downloads")
+    args = parser.parse_args()
 
-exit(0)
+    if args.geonetwork:
+        geonetwork_collector(args.base_download_path)
+    else:
+        main(args.base_download_path)
+    exit(0)
