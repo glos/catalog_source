@@ -22,7 +22,8 @@
 	  let $searchTerms := tokenize($textsearch,'\s+')
 
 	  for $val in $sequences
-      where ($val//*:info/category/text() contains text {$searchTerms} all words)
+      (: join all GN category text into a space delimited string and search :)
+      where (string-join($val//*:info/category/text(), ' ') contains text {$searchTerms} all words)
               return $val
 	};
 	
