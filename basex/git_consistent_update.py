@@ -182,10 +182,10 @@ def main(base_server, base_user, base_pass, base_port=1984, db_name='', git_meta
 
     #### Get the REPO object ####
     # Reinitialize every time - it is idempotent
-    repo = Repo.init(git_metadata_dir)
+    #repo = Repo.init(git_metadata_dir)
     
     # get the command line caller:
-    cmdgit = repo.git
+    #cmdgit = repo.git
     
     # keep historical option to specify a single directory to update
     directory = None
@@ -222,36 +222,8 @@ def main(base_server, base_user, base_pass, base_port=1984, db_name='', git_meta
 
 
 def expired(fname):
-    namespaces = {
-    "gmx":"http://www.isotc211.org/2005/gmx",
-    "gsr":"http://www.isotc211.org/2005/gsr",
-    "gss":"http://www.isotc211.org/2005/gss",
-    "gts":"http://www.isotc211.org/2005/gts",
-    "xs":"http://www.w3.org/2001/XMLSchema",
-    "gml":"http://www.opengis.net/gml/3.2",
-    "xlink":"http://www.w3.org/1999/xlink",
-    "xsi":"http://www.w3.org/2001/XMLSchema-instance",
-    "gco":"http://www.isotc211.org/2005/gco",
-    "gmd":"http://www.isotc211.org/2005/gmd",
-    "gmi":"http://www.isotc211.org/2005/gmi",
-    "srv":"http://www.isotc211.org/2005/srv",
-    }
-
-                
-    # Always modify date stamp!
-    root = etree.parse(fname)
-    
-    x_res = root.xpath(
-    'gmd:dateStamp/gco:DateTime', 
-    namespaces=namespaces
-    )
-    
-    dt = x_res[0].text
-    d  = datetime.datetime.strptime( dt[:-7], "%Y-%m-%dT%H:%M:%S" )
-
-    delta = time.mktime(datetime.datetime.now().timetuple()) - time.mktime(d.timetuple())
-
-    
+    mtime = os.path.getmtime(fname)
+    delta = time.time() - mtime
     return delta / (3600.)
 
 
