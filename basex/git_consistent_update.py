@@ -182,10 +182,10 @@ def main(base_server, base_user, base_pass, base_port=1984, db_name='', git_meta
 
     #### Get the REPO object ####
     # Reinitialize every time - it is idempotent
-    #repo = Repo.init(git_metadata_dir)
+    repo = Repo.init(git_metadata_dir)
     
     # get the command line caller:
-    #cmdgit = repo.git
+    cmdgit = repo.git
     
     # keep historical option to specify a single directory to update
     directory = None
