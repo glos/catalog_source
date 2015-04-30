@@ -115,8 +115,15 @@ def main(base_download_path):
     download_path = os.path.join(base_download_path, "GLC")
     XmlDownloader.run(isos, download_path)
 
+    # MTRI Water Temp
+    selects = [".*"]
+    download_path = os.path.join(base_download_path, "Thermistor")
+    run_downloader(selects, "http://tds.glos.us/thredds/mtri/water_temp_in_situ.html", download_path)
+    
+
 def geonetwork_collector(base_download_path):
-    isos = GeoNetworkCollector("http://slrfvm.glos.us/geonetwork").run()
+    # read isos not equal to 260, suspect crashing is occurring due to this.
+    isos = [i for i in GeoNetworkCollector("http://slrfvm.glos.us/geonetwork").run() if i[-3:] != '260']
     download_path = os.path.join(base_download_path, "GeoNetwork")
     XmlDownloader.run(isos, download_path, namer=GeoNetworkCollector.uuid_namer, modifier=GeoNetworkCollector.modifier)   
 
@@ -125,7 +132,6 @@ if __name__ == '__main__':
     parser.add_argument('-g', '--geonetwork', help="Run only the geonetwork collector", action="store_true")
     parser.add_argument("base_download_path", help="Root directory for downloads")
     args = parser.parse_args()
-
     if args.geonetwork:
         geonetwork_collector(args.base_download_path)
     else:

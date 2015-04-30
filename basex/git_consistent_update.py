@@ -62,11 +62,11 @@ class ControlledUpdate(object):
         
         self._repo.index.commit(commit_message)
         
-        for remote in self._repo.remotes:
-            remote.pull()
-        
-        for remote in self._repo.remotes:
-            remote.push()
+#        for remote in self._repo.remotes:
+#            remote.pull()
+#        
+#        for remote in self._repo.remotes:
+#            remote.push()
             
         # clean up any files that were removed
         cmdgit = self._repo.git

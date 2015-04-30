@@ -2,7 +2,6 @@ source ~/.bash_profile
 workon harvest_test
 
 cd $CATALOG_SOURCE
-
 cd metadown
 python download.py $METADOWN_DATA
 cd ..
