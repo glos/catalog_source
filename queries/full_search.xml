@@ -6,14 +6,25 @@
 	declare namespace gmi="http://www.isotc211.org/2005/gmi";
 	declare namespace gml="http://www.opengis.net/gml";
 	declare namespace xs="http://www.w3.org/2001/XMLSchema";
+    declare namespace geonet="http://fao.org/geonetwork";
 	
 	declare function local:FreeTextQueryFunction($textsearch)
 	{
 	  let $searchTerms := tokenize($textsearch,'\s+')
 	
 	  for $val in /*
-		where ($val//text() contains text {$searchTerms} all words using fuzzy)
+        where ($val//text() contains text {$searchTerms} all words using fuzzy)
 		  return$val
+	};
+
+	declare function local:GeoNetworkCategorySearch($sequences, $textsearch)
+	{
+	  let $searchTerms := tokenize($textsearch,'\s+')
+
+	  for $val in $sequences
+      (: join all GN category text into a space delimited string and search :)
+      where (string-join($val//*:info/category/text(), ' ') contains text {$searchTerms} all words)
+              return $val
 	};
 	
 	declare function local:GeoSpatialWithinQueryFunction($sequences, $west, $east, $north, $south)
@@ -99,6 +110,8 @@
 	declare function local:FormatResult($fois)
 	{
 	
+     (: FIXME: can't get geonet xmlns to work properly even when declared
+              mainly for geonet:info :)
 	  for $foi in $fois
 	  return
 	  <gmd:MD_Metadata>
@@ -106,6 +119,7 @@
 	  {$foi/gmd:identificationInfo}
 	  {$foi/gmd:distributionInfo}
 	  {$foi/gmd:contentInfo}
+      {$foi/*:info}
 	  </gmd:MD_Metadata>
 	  
 	};
@@ -147,6 +161,10 @@
 							else
 							  $resultSequence
 	
+let $resultSequence := if ($geonetCatSearch) then
+                            local:GeoNetworkCategorySearch($resultSequence, $catSearchTerm)
+                       else
+                            $resultSequence
 	
 	
 	let $resultSequence := if (not ($textSearch)) then
@@ -160,7 +178,7 @@
 	let $num := min (($max, $records))
 	
 	return 
-	  <csw:GetRecordsResponse xmlns:csw="http://www.opengis.net/cat/csw/2.0.2" xmlns:ogc="http://www.opengis.net/ogc" xmlns:gmd="http://www.isotc211.org/2005/gmd" xmlns:ows="http://www.opengis.net/ows" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.0.2" xsi:schemaLocation="http://www.opengis.net/cat/csw/2.0.2 http://schemas.opengis.net/csw/2.0.2/CSW-discovery.xsd">
+        <csw:GetRecordsResponse xmlns:csw="http://www.opengis.net/cat/csw/2.0.2" xmlns:ogc="http://www.opengis.net/ogc" xmlns:gmd="http://www.isotc211.org/2005/gmd" xmlns:ows="http://www.opengis.net/ows" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.0.2" xsi:schemaLocation="http://www.opengis.net/cat/csw/2.0.2 http://schemas.opengis.net/csw/2.0.2/CSW-discovery.xsd" xmlns:geonet="http://fao.org/geonetwork">
 		<csw:RequestId/>
 		<csw:SearchStatus timestamp="{current-dateTime()}"/>
 		<csw:SearchResults nextRecord="{$end + 1}" numberOfRecordsMatched="{$max}" numberOfRecordsReturned="{$num}" recordSchema="http://www.isotc211.org/2005/gmd">
@@ -172,10 +190,16 @@
   </text>
   <variable name="records" value="___LIMIT___"/>
   <variable name="start" value="___START___"/>
-  
+
   <variable name="textSearch" value="___TEXTSEARCH___"/>
   <variable name="searchTerm" value="___ANYTEXT___"/>
-  
+
+  <!-- For reasons I don't really understand, "0" won't evaluate as false here
+       without declaring the type, unlike the other variables. -->
+  <variable name="geonetCatSearch" type="xs:decimal"
+            value="___GNCATSEARCH___"/>
+  <variable name="catSearchTerm" value="___CATTEXT___"/>
+
   <variable name="geoSearch" value="___GEOSEARCH___"/>
   <variable name="west" value="___WEST___"/>
   <variable name="east" value="___EAST___"/>
