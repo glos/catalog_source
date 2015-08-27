@@ -23,7 +23,7 @@ def main(base_download_path):
 
     # selects: The ID in THREDDS needs to contain one of these strings to be identified.
     # skips: The LINK path in the actual thredds catalog webpage can't be equal to any of these strings
-    
+
     # We only want the Agg selects
     selects = [".*SST-Agg"]
     download_path = os.path.join(base_download_path, "Satellite")
@@ -64,7 +64,7 @@ def main(base_download_path):
     skips = [".*Nowcast - Individual Files/", ".*Forecast - Individual Files/"]
     download_path = os.path.join(base_download_path, "Models", "HECWFS")
     run_downloader(selects, "http://tds.glos.us/thredds/hecwfs/hecwfs.html", download_path, skips=skips)
-    
+
     # We only want the Agg and Latest
     selects = [".*Nowcast-Agg.*", ".*Lastest-Forecast.*"]
     # Don't process the "files/" lists
@@ -98,7 +98,7 @@ def main(base_download_path):
     selects = [".*"]
     download_path = os.path.join(base_download_path, "WaterLevels")
     run_downloader(selects, "http://tds.glos.us/thredds/water_levels.html", download_path)
-    
+
     #UMD Glider
     selects = [".*"]
     download_path = os.path.join(base_download_path, "UMDGlider")
@@ -119,13 +119,15 @@ def main(base_download_path):
     selects = [".*"]
     download_path = os.path.join(base_download_path, "Thermistor")
     run_downloader(selects, "http://tds.glos.us/thredds/mtri/water_temp_in_situ.html", download_path)
-    
+
 
 def geonetwork_collector(base_download_path):
-    # read isos not equal to 260, suspect crashing is occurring due to this.
-    isos = [i for i in GeoNetworkCollector("http://slrfvm.glos.us/geonetwork").run() if i[-3:] != '260']
+    # FIXME: Remove hardcoding of GN url
+    isos = GeoNetworkCollector("http://data.glos.us/metadata").run()
     download_path = os.path.join(base_download_path, "GeoNetwork")
-    XmlDownloader.run(isos, download_path, namer=GeoNetworkCollector.uuid_namer, modifier=GeoNetworkCollector.modifier)   
+    XmlDownloader.run(isos, download_path,
+                      namer=GeoNetworkCollector.uuid_namer,
+                      modifier=GeoNetworkCollector.modifier)
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Metadata Download')
